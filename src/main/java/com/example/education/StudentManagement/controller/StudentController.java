@@ -1,31 +1,43 @@
 package com.example.education.StudentManagement.controller;
 
 import com.example.education.StudentManagement.Service.StudentService;
-import com.example.education.StudentManagement.dto.StudentDtoByName;
 import com.example.education.StudentManagement.model.Student;
-import net.bytebuddy.implementation.bytecode.assign.TypeCasting;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/student")
 public class StudentController {
  @Autowired
     StudentService studentService;
     @PostMapping("/create")
-    public Student createStudent(@RequestBody Student student )
+    public String createStudent(@ModelAttribute Student student )
     {
-        return  studentService.createStudent(student);
+        studentService.createStudent(student);
+        return "redirect:/student/readall";
 
     }
     @GetMapping("/readall")
-    public List<Student> getallStudent()
+    public String getallStudent(Model model)
     {
-
-        return studentService.getallStudent();
+        model.addAttribute("students",studentService.getallStudent());
+        return "list-students";
     }
+    @GetMapping("/edit/{id}")
+    public String updateStudent(@PathVariable("id") Long id, Model model)
+    {
+        //studentService.getStudentByName(student);
+        model.addAttribute("student",studentService.getStudentById(id));
+        return "update-student";
+
+    }
+    @PostMapping("edit")
+
+
     @GetMapping("/{id}")
     public Student getStudentById(@PathVariable Long id)
     {
@@ -37,6 +49,7 @@ public class StudentController {
 
 
     }
+
     @GetMapping("/findbyname")
     public List<Student> getStudentByName(@RequestParam String name)
     {
@@ -49,6 +62,12 @@ public class StudentController {
     public List<Student> getStudentBycollegeName(@RequestParam String coName){
         return studentService.getStudentBycollegeName(coName);
     }
+    @GetMapping("/add")
+    public String showAddStudentForm(@ModelAttribute Student student){
+        return "add-student";
+
+    }
+
 
 
 }
